@@ -193,9 +193,8 @@ public:
 
 	
 };
-int main(){
-	//freopen("in.txt", "r", stdin);
-	//freopen("out.txt", "w", stdout);
+
+void test(){
 	LinkedList<int>	 ll;
 	list<int> ls;
 	int n ;
@@ -246,6 +245,11 @@ int main(){
 		// cout<<"c"<<endl;
 
 	}
+}
+int main(){
+	//freopen("in.txt", "r", stdin);
+	//freopen("out.txt", "w", stdout);
+	
 
 	return 0;
 }
