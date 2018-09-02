@@ -7,24 +7,28 @@
 #include <list>
 using namespace std;
 
-template<typename T>	
+
+template<typename T>
 class LinkedList{
+
+
 	class Node{
 		public:
 		T data;
-		Node *next = NULL;
-			Node(){
+		Node *next;
+		Node(){
+			next = NULL;
+		}
 
-			}
-
-			Node(const T &t){
-				data = t;
-			}
-		};
-
+		Node(const T &t){
+			data = t;
+			next = NULL;
+		}
+	};
 
 	Node *head = NULL;
-	
+
+
 public:
 	LinkedList(){
 		
@@ -46,6 +50,26 @@ public:
 
 		}
 		head = NULL;
+	}
+
+	void reverse(){
+		Node *p = head, *l = NULL;
+		while(p){
+			Node *r = p->next;
+			p->next = l;
+			l = p;
+			p = r;
+		}
+		head = l;
+	}
+
+	void print(){
+		Node *p = head;
+		while(p){
+			cout<<p->data<<endl;
+			p = p -> next;
+		}
+
 	}
 
 
@@ -247,9 +271,6 @@ void test(){
 	}
 }
 int main(){
-	//freopen("in.txt", "r", stdin);
-	//freopen("out.txt", "w", stdout);
-	
-
+	test();
 	return 0;
 }
