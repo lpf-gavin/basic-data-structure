@@ -1,13 +1,12 @@
+//ref:https://www.cs.cmu.edu/~ckingsf/bioinfo-lectures/kdtrees.pdf
+
+
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <queue>
 #include <vector>
-#include <map>
-#include <stack>
-#include <set>
-#include <bitset>
 #include <algorithm>
 using namespace std;
 
@@ -83,7 +82,7 @@ class kd_tree{
 	}
 public:
 	kd_tree(){
-		head = NULL;
+		root = NULL;
 	}
 
 	~kd_tree(){
