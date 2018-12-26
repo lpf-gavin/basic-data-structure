@@ -2,6 +2,7 @@
 Bibliography:
 1 https://www.cs.cmu.edu/~ckingsf/bioinfo-lectures/kdtrees.pdf
 2 http://www.dcc.fc.up.pt/~pribeiro/aulas/taa1516/rangesearch.pdf
+3 https://www.jianshu.com/p/bb3cea4cf1de
 
 */
 #include <iostream>
@@ -16,29 +17,64 @@ using namespace std;
 
 const int DIM = 5;
 
-const double EPS = 1e-6;
+const double EPS = 1e-6, INF = 1e18;
 
 // cd: cutting dimension
 
 class Node{
-	double x[DIM];
+	//data, lower bound , upper bound
+	double x[DIM], lower[DIM], upper[DIM];
     friend class kd_tree;
 public:
 
 	Node *left, *right;
 
-	Node(){
-		left = right = nullptr;
-	}
-
 	Node(const double data[]){
 		left = right = nullptr;
 		for (int i = 0; i < DIM; i++){
 			x[i] = data[i];
+			lower[i] = data[i] - EPS;
+			upper[i] = data[i] + EPS;
 		}
 	}
 
+	void update_bound(const Node &tmp){
+		for (int i = 0; i < DIM; i++){
+			lower[i] = min(lower[i], tmp.lower[i]);
+			upper[i] = max(upper[i], tmp.upper[i]);
+		}
+	}
+
+	void update_bound(const double tmp[]){
+		for (int i = 0; i < DIM; i++){
+			lower[i] = min(lower[i], tmp[i]);
+			upper[i] = max(upper[i], tmp[i]);
+		}
+	}
+
+	void update_bound(){
+		if(left){
+			update_bound(*left);
+		}
+		if(right){
+			update_bound(*right);
+		}
+		
+	}
+
 	~Node(){
+	}
+
+	double point_to_rect(const Node &rect)const{
+		long long s = 0;
+		for (int i = 0; i < DIM; i++){
+			if(x[i] >= rect.lower[i] && x[i] <= rect.upper[i]){
+				//nothing just add 0
+			}else{
+				s += min((x[i] - rect.lower[i]) * (x[i] - rect.lower[i]), (x[i] - rect.upper[i]) * (x[i] - rect.upper[i]));
+			}
+		}
+		return sqrt(s);
 	}
 
 	double operator[](int i)const{
@@ -89,13 +125,13 @@ class kd_tree{
 
 	void clear(Node *&node){
 		if (node){
-			printf("l\n");
 			clear(node->left);
 			clear(node->right);
 			delete node;
 			node = nullptr;
 		}
 	}
+
 	Node *insert(Node *&node, int cd, Node *data){
 		if (node == nullptr){
 			node = data;
@@ -106,6 +142,7 @@ class kd_tree{
 		}else{
 			node->right = insert(node->right, (cd + 1) % DIM, data);
 		}
+		node->update_bound();
 		return node;
 	}
 
@@ -142,13 +179,22 @@ class kd_tree{
 	double best_dis;
 
 
+	//determine whether to update answer
+	bool check_out(const Node &a, const Node &rect){
+        return a.point_to_rect(rect) > best_dis;
+    }
+
 	void find_nn(const Node *node, const Node &data, int cd){
 		if(node == nullptr){
 			return;
 		}
 
+		if(check_out(*node, data)){
+			return;
+		}
+
 		double dis = node->distance(data);
-		if(best_dis < 0 || dis < best_dis){
+		if(dis < best_dis){
 			best = node;
 			best_dis = dis;
 		}
@@ -190,6 +236,7 @@ class kd_tree{
 		}else{
 			node->right = del_node(node->right, data, next_cd);
 		}
+		node->update_bound();
 		return node;
 	}
 
@@ -208,7 +255,7 @@ public:
 
 
 	const Node *find_min(int dim){
-		if(dim < 0 || dim >= DIM){
+		if(dim >= DIM){
 			printf("error in find_min, dim is not in [0, DIM) \n");
 			return nullptr;
 		}
@@ -222,7 +269,7 @@ public:
 
 	const Node *find_nn(const Node &data){
 		best = nullptr;
-		best_dis = -1;
+		best_dis = INF;
 		find_nn(root, data, 0);
 		return best;
 	}
@@ -235,15 +282,29 @@ double d[DIM] = {-3441, -4, -1340.99, 413, -1};
 
 double e[DIM] = {-3441, 4, -1340, 413, 1};
 
+
 int main(){
 	//freopen("in.txt", "r", stdin);
 	//freopen("out.txt", "w", stdout);
+	//test this program, unfinished
 	kd_tree t;
-	t.insert(a);
-	t.insert(b);
-	t.insert(c);
-	t.insert(d);
-	cout<<(*(t.find_nn(d)))<<endl;
-	t.del_node(Node(e));
+	std::vector<std::vector<double> > v;
+	int n;
+	cin >> n;
+	while(n--){
+
+		if (rand() % 3 == 0 && v.size()){
+
+		}else{
+
+			std::vector<double> v;
+			for (int j = 0; j < DIM; j++){
+				v.push_back(rand() % 9999999);
+			}
+
+		}
+
+	}
+
 	return 0;
 }
